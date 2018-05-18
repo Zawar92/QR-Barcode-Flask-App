@@ -1,0 +1,60 @@
+<html>
+   <head>
+      <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+      <title>Angular JS Includes</title>
+      
+      <style>
+         table, th , td {
+            border: 1px solid grey;
+            border-collapse: collapse;
+            padding: 5px;
+         }
+         
+         table tr:nth-child(odd) {
+            background-color: #f2f2f2;
+         }
+         
+         table tr:nth-child(even) {
+            background-color: #ffffff;
+         }
+      </style>
+      
+   </head>
+   <body>
+      <h2>AngularJS Sample Application</h2>
+      <div ng-app="myApp" ng-controller="AngularCtrl">
+      
+         <table>
+            <tr>
+               <th>ID</th>
+               <th>Name</th>
+               <th>Location</th>
+               <th>Type</th>
+            </tr>
+         
+            <tr ng-repeat="x in topics">
+               <td>{{ x }}</td>
+               <td>{{ x }}</td>
+               <td>{{ x }}</td>
+               <td>{{ x }}</td>
+            </tr>
+         </table>
+      </div>
+      
+     <script>
+         var app = angular.module('myApp', []);
+         app.controller('AngularCtrl', function($scope, $http) {
+             $http.get("http://localhost:5000/getdata")
+             .then(function(response) 
+         {
+            console.log(response['data']['report'])
+            $scope.topics = response['data']['report'];
+            
+         });
+      });
+      </script>
+      
+      
+      
+   </body>
+</html>

@@ -1,0 +1,150 @@
+<html>
+	<head>
+<!-- CSS -->
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script 
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js" 
+      integrity="sha256-vIL0pZJsOKSz76KKVCyLxzkOT00vXs+Qz4fYRVMoDhw="
+      crossorigin="anonymous">
+    </script>
+		<style>
+			table {
+			    font-family: arial, sans-serif;
+			    border-collapse: collapse;
+			    width: 100%;
+			}
+
+			td, th {
+			    border: 1px solid #dddddd;
+			    text-align: left;
+			    padding: 8px;
+			}
+
+			tr:nth-child(even) {
+			    background-color: #dddddd;
+			}
+		</style>
+		<style>
+      .w3-btn {margin-bottom:10px;}
+    </style>
+	</head>
+	<body>
+		<!-- <div class="w3-container"> -->
+    <div class="row">
+      <div class="column">
+        <button id="getreciept" class="w3-button w3-white w3-border w3-round-large" >Get Reciept</button>
+      </div>
+      <!-- <div class="column">
+        <button id="readbarcode" class="w3-button w3-white w3-border w3-round-large" >Get Data</button>
+      </div> -->
+    </div>
+    <!-- </div> -->
+    <div class="portlet-body">
+        <table class="table1" id="table_id">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Location</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+    </div>
+    <script type="text/javascript">  
+      // $( "#readbarcode" ).click(function(){
+      $(document).ready(function(){  
+        setInterval(function(){
+          // $("#table_id").load(window.location + " #table_id");
+          $.ajax({
+            url: "http://localhost:5000/getdata",
+            type: "GET",
+            success: function(text) 
+            {
+              if(text != "empty")
+              {
+                var count = text['report'].length;
+                console.log(text);
+                for (var i = 0; i < count; i++) 
+                {
+                  var tr = $('<tr/>');
+                  $(tr).append("<td>" + text.report[i].id + "</td>");
+                  $(tr).append("<td>" + text.report[i].name + "</td>");
+                  $(tr).append("<td>" + text.report[i].location + "</td>");
+                  $(tr).append("<td>" + text.report[i].Type + "</td>");
+                  $('.table1').html(tr);
+                }
+              }
+            }
+          });
+        }, 1000);
+      });
+      $( "#getreciept" ).click(function(){
+          // $("#table_id").load(window.location + " #table_id");
+          $.ajax({
+            url: "http://localhost:5000/getdata",
+            type: "GET",
+            success: function(text) 
+            {
+              const pdf = new jsPDF();
+              var currentdate = new Date(); 
+              var datetime =  + currentdate.getDate() + "/"
+                              + (currentdate.getMonth()+1)  + "/" 
+                              + currentdate.getFullYear() + " - "  
+                              + currentdate.getHours() + ":"  
+                              + currentdate.getMinutes() + ":" 
+                              + currentdate.getSeconds();
+
+              if(text != "empty")
+              {
+                var count = text['report'].length;
+                console.log(text);
+                // for (var i = 0; i < count; i++) 
+                // {
+                //   download("receipt.txt",JSON.stringify("Name :"+JSON.stringify(text.report[i].name).replace(/\s/g, "")
+                //                                         +"Id :"+JSON.stringify(text.report[i].id).replace(/\s/g, "")
+                //                                         +"Type :"+JSON.stringify(text.report[i].Type).replace(/\s/g, "")
+                //                                         +"Location :"+JSON.stringify(text.report[i].location).replace(/\s/g, "")));
+                // }
+                for (var i = 0; i < count; i++) 
+                {
+                  
+                  pdf.text(10, 10, `\t\t\t\t\t\t YOUR RECIEPT \n 
+                                                ${"Name :"+JSON.stringify(text.report[i].name)}\n
+                                                ${"ID :"+JSON.stringify(text.report[i].id)}\n
+                                                ${"Type :"+JSON.stringify(text.report[i].Type)}\n
+                                                ${"Location :"+JSON.stringify(text.report[i].location)}\n
+                                                \t\t\t\t${"Time :"+datetime}`);
+                }
+                pdf.save();
+              }
+            }
+        });
+      });
+      // function download(filename, text) {
+      //   var element = document.createElement('a');
+      //   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      //   element.setAttribute('download', filename);
+
+      //   element.style.display = 'none';
+      //   document.body.appendChild(element);
+
+      //   element.click();
+
+      //   document.body.removeChild(element);
+      // }
+
+    </script>
+
+	</body>
+</html>
